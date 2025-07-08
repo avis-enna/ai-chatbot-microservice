@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Widget</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Test Widget</h1>
+  <input type="text" id="testInput" placeholder="Type a message..." />
+  <button id="testButton">Send Test</button>
+  <div id="testOutput"></div>
+
+  <script>
+    console.log('Test script loaded');
+    
+    const testInput = document.getElementById('testInput');
+    const testButton = document.getElementById('testButton');
+    const testOutput = document.getElementById('testOutput');
+    
+    console.log('Elements:', {
+      testInput: !!testInput,
+      testButton: !!testButton,
+      testOutput: !!testOutput
+    });
+    
+    async function sendTestMessage() {
+      const message = testInput.value.trim();
+      if (!message) return;
+      
+      console.log('Sending test message:', message);
+      testOutput.innerHTML = 'Sending...';
+      
+      try {
+        const response = await fetch('http://localhost:3001/api/chat/message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': 'ak_1751948233952_l9tap319gfn'
+          },
+          body: JSON.stringify({
+            message: message,
+            sessionId: 'test_widget_' + Date.now()
+          })
+        });
+        
+        console.log('Response:', response);
+        
+        if (!response.ok) {
+          throw new Error('Response not ok: ' + response.status);
+        }
+        
+        const data = await response.json();
+        console.log('Data:', data);
+        
+        if (data.success) {
+          testOutput.innerHTML = 'Response: ' + data.data.response;
+        } else {
+          testOutput.innerHTML = 'Error: ' + data.error;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        testOutput.innerHTML = 'Error: ' + error.message;
+      }
+    }
+    
+    testButton.addEventListener('click', sendTestMessage);
+    testInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendTestMessage();
+      }
+    });
+  </script>
+</body>
+</html>

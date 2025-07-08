@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume AI Assistant Test</title>
+</head>
+<body>
+    <h1>Test My Resume AI Assistant</h1>
+    
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div id="messages" style="
+            border: 1px solid #ddd; 
+            height: 300px; 
+            overflow-y: auto; 
+            padding: 15px; 
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        "></div>
+        
+        <div style="display: flex; gap: 10px;">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Ask about skills, experience, projects..." 
+                style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"
+            >
+            <button 
+                onclick="sendMessage()" 
+                style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;"
+            >
+                Send
+            </button>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <h3>Try these questions:</h3>
+            <button onclick="askQuestion('What are your technical skills?')" style="margin: 5px; padding: 8px 12px; background: #e9ecef; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">Technical Skills</button>
+            <button onclick="askQuestion('Tell me about your work experience')" style="margin: 5px; padding: 8px 12px; background: #e9ecef; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">Experience</button>
+            <button onclick="askQuestion('What projects have you built?')" style="margin: 5px; padding: 8px 12px; background: #e9ecef; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">Projects</button>
+            <button onclick="askQuestion('What is your background?')" style="margin: 5px; padding: 8px 12px; background: #e9ecef; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">Background</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://premiere-brakes-attitudes-ohio.trycloudflare.com';
+        const API_KEY = 'ak_1751948233952_l9tap319gfn';
+        const SESSION_ID = 'test_session_' + Date.now();
+
+        function addMessage(text, isUser) {
+            const messages = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.style.cssText = `
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 8px;
+                ${isUser ? 
+                    'background: #007bff; color: white; margin-left: 50px; text-align: right;' : 
+                    'background: white; border: 1px solid #ddd; margin-right: 50px;'
+                }
+            `;
+            div.textContent = text;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function sendMessage(messageText = null) {
+            const input = document.getElementById('messageInput');
+            const message = messageText || input.value.trim();
+            
+            if (!message) return;
+            
+            input.value = '';
+            addMessage(message, true);
+            addMessage('Typing...', false);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat/message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-API-Key': API_KEY
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        sessionId: SESSION_ID
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Remove "Typing..." message
+                const messages = document.getElementById('messages');
+                messages.removeChild(messages.lastChild);
+                
+                if (data.success) {
+                    addMessage(data.data.response, false);
+                } else {
+                    addMessage('Error: ' + (data.error || 'Unknown error'), false);
+                }
+            } catch (error) {
+                const messages = document.getElementById('messages');
+                messages.removeChild(messages.lastChild);
+                addMessage('Network error: ' + error.message, false);
+            }
+        }
+
+        function askQuestion(question) {
+            sendMessage(question);
+        }
+
+        // Allow Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Add welcome message
+        addMessage('Hi! I\'m an AI assistant that knows all about my background. Ask me anything about my skills, experience, or projects!', false);
+    </script>
+</body>
+</html>

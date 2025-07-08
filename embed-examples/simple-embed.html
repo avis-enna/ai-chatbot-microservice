@@ -1,0 +1,32 @@
+<!-- Simple iframe embed - just copy this into your HTML -->
+<iframe 
+  src="https://premiere-brakes-attitudes-ohio.trycloudflare.com/widget" 
+  width="400" 
+  height="600" 
+  frameborder="0"
+  style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+</iframe>
+
+<!-- Or as a popup button -->
+<button onclick="openChatWidget()" style="
+  background: #007bff; 
+  color: white; 
+  border: none; 
+  padding: 12px 24px; 
+  border-radius: 25px; 
+  cursor: pointer;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+">
+  💬 Chat with AI Assistant
+</button>
+
+<script>
+function openChatWidget() {
+  window.open(
+    'https://premiere-brakes-attitudes-ohio.trycloudflare.com/widget',
+    'chatbot',
+    'width=450,height=650,scrollbars=no,resizable=yes'
+  );
+}
+</script>
