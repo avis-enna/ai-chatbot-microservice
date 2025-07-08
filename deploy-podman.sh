@@ -33,7 +33,7 @@ NODE_ENV=production
 PORT=3001
 HOST=0.0.0.0
 JWT_SECRET=$(openssl rand -base64 32)
-OLLAMA_BASE_URL=http://host.containers.internal:11434
+OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.1
 CORS_ORIGIN=*
 DATABASE_PATH=/app/data/chatbot.db
@@ -47,7 +47,7 @@ podman run -d \
     -p $PORT:$PORT \
     --env-file .env.production \
     -v ./data:/app/data:Z \
-    --add-host=host.containers.internal:host-gateway \
+    --network host \
     $IMAGE_NAME
 
 # Wait for container to start
